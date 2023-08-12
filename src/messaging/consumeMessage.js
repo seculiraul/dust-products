@@ -1,5 +1,6 @@
 const amqp = require('amqplib')
 const rabbitmq_config = require('./rabbitmq_config')
+const adjustQuantity = require('./adjustQuantity')
 
 async function consumeMessages() {
   const connection = await amqp.connect(rabbitmq_config.rabbitmq.url)
@@ -17,6 +18,7 @@ async function consumeMessages() {
   )
   channel.consume(q.queue, (msg) => {
     const data = JSON.parse(msg.content)
+    adjustQuantity(data.message)
     console.log(data)
     channel.ack(msg)
   })
