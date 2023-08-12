@@ -56,6 +56,13 @@ const productSchema = new mongoose.Schema({
   },
 })
 
+productSchema.methods.decreaseQuantity = function (size, quantity) {
+  this.sizes
+    .filter((e) => e.size === size)
+    .map((e) => (e.quantity = e.quantity - quantity))
+  return this.save()
+}
+
 productSchema.pre('save', function (next) {
   this.code = [
     this.name.toLowerCase().split(' ').join('-'),
