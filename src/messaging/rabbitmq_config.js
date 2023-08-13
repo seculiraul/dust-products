@@ -1,6 +1,7 @@
 module.exports = {
   rabbitmq: {
     url: 'amqp://localhost',
-    exchange: 'orderExchange',
+    orderExchange: 'orderExchange',
+    productExchange: 'productExchange',
   },
 }
