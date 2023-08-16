@@ -13,7 +13,7 @@ const start = () => {
   } catch (err) {
     console.log(err)
   }
-  app.listen(3001, () => {
+  app.listen(3002, () => {
     console.log('listening on port 3000')
   })
 }

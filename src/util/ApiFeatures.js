@@ -40,6 +40,11 @@ class ApiFeatures {
     for (const property in obj) {
       obj[property] = obj[property].split(',')
     }
+    if (obj.size) {
+      const { size } = obj
+      obj.sizes = { $elemMatch: { size, quantity: { $gt: 0 } } }
+      delete obj.size
+    }
     return obj
   }
 }
