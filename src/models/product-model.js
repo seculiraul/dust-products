@@ -20,6 +20,10 @@ const productSchema = new mongoose.Schema({
     min: [0, 'Price must be positive'],
     required: [true, 'A product must have a price'],
   },
+  brand: {
+    type: String,
+    default: 'unknown',
+  },
   sizes: {
     type: [
       {
@@ -65,6 +69,7 @@ productSchema.methods.decreaseQuantity = function (size, quantity) {
 
 productSchema.pre('save', function (next) {
   this.code = [
+    this.brand.toLowerCase().split(' ').join(''),
     this.name.toLowerCase().split(' ').join('-'),
     this.color.toLowerCase(),
   ].join('-')
