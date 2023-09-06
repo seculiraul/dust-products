@@ -9,6 +9,15 @@ const productSchema = new mongoose.Schema({
   code: String,
   category: {
     type: String,
+    required: [true, 'A product must have a category'],
+  },
+  collectionType: {
+    type: String,
+    required: [true, 'A product must have a collection type'],
+  },
+  collectionCode: {
+    type: String,
+    required: [true, 'A product must have a collection code'],
   },
   gender: {
     type: String,

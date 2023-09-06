@@ -5,40 +5,52 @@ const rabbitMqClient = require('../messaging/rabbitMqClient')
 module.exports = catchAsync(async (req, res, next) => {
   const {
     name,
-    gender,
-    color,
-    otherColors,
-    specs,
-    details,
-    sizes,
     category,
-    brand,
+    collectionType,
+    collectionCode,
+    gender,
     price,
+    brand,
+    specs,
+    sizes,
+    color,
     images,
+    displayImage,
     usualDiscount,
     description,
+    details,
     newProduct,
     bestSelling,
-    displayImage,
   } = req.body
+
+  const similarProducts = await Product.find({
+    collectionType,
+    collectionCode,
+    category,
+    gender,
+    brand,
+  })
+
+  const otherColors = similarProducts.map((product) => product.color)
 
   const product = await Product.create({
     name,
-    gender,
-    color,
-    otherColors,
-    specs,
-    details,
-    sizes,
     category,
-    brand,
+    collectionType,
+    collectionCode,
+    gender,
     price,
+    brand,
+    specs,
+    sizes,
+    color,
     images,
+    displayImage,
     usualDiscount,
     description,
+    details,
     newProduct,
     bestSelling,
-    displayImage,
   })
 
   rabbitMqClient.publishMessage('Product_Created', {
@@ -47,6 +59,11 @@ module.exports = catchAsync(async (req, res, next) => {
     code: product.code,
     price: product.price,
     color: product.color,
+  })
+
+  similarProducts.forEach(async (product) => {
+    product.otherColors = [...product.otherColors, color]
+    await product.save()
   })
   res.json({
     message: 'success',
