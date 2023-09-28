@@ -9,7 +9,6 @@ class ApiFeatures {
     const excluded = ['sort', 'page', 'limit']
     const newQuery = excluded.forEach((el) => delete obj[el])
     this.modifyQuery(obj)
-    console.log(obj)
     this.query = this.query.find(obj)
 
     return this
@@ -17,8 +16,9 @@ class ApiFeatures {
 
   sort() {
     if (this.queryString.sort) {
-      const sortBy = this.queryString.sort.split(',').join(' ')
-      this.query = this.query.sort(sortBy)
+      const [sortBy, order] = this.queryString.sort.split('-')
+
+      this.query = this.query.sort({ [sortBy]: order })
     } else {
       this.query = this.query.sort('bestSelling')
     }
