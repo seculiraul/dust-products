@@ -6,9 +6,15 @@ class ApiFeatures {
 
   filter() {
     let obj = { ...this.queryString }
-    const excluded = ['sort', 'page', 'limit']
+    const excluded = ['sort', 'page', 'limit', 'search']
     const newQuery = excluded.forEach((el) => delete obj[el])
+
     this.modifyQuery(obj)
+
+    if (this.queryString.search) {
+      obj.name = { $regex: this.queryString.search, $options: 'i' }
+    }
+
     this.query = this.query.find(obj)
 
     return this
@@ -16,7 +22,7 @@ class ApiFeatures {
 
   sort() {
     if (this.queryString.sort) {
-      const [sortBy, order] = this.queryString.sort.split('-')
+      const [sortBy, order] = this.queryString.sort?.split('-')
 
       this.query = this.query.sort({ [sortBy]: order })
     } else {
@@ -37,9 +43,7 @@ class ApiFeatures {
   }
 
   modifyQuery(obj) {
-    for (const property in obj) {
-      obj[property] = obj[property].split(',')
-    }
+    Object.keys(obj).forEach((key) => (obj[key] = obj[key]?.split(',')))
     if (obj.size) {
       const { size } = obj
       obj.sizes = { $elemMatch: { size, quantity: { $gt: 0 } } }
