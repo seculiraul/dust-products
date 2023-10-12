@@ -29,6 +29,7 @@ const productSchema = new mongoose.Schema({
     min: [0, 'Price must be positive'],
     required: [true, 'A product must have a price'],
   },
+  salePrice: String,
   brand: {
     type: String,
     default: 'unknown',
@@ -67,6 +68,7 @@ const productSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  isOnSale: Boolean,
 })
 
 productSchema.methods.decreaseQuantity = function (size, quantity) {
@@ -82,6 +84,16 @@ productSchema.pre('save', function (next) {
     this.name.toLowerCase().split(' ').join('-'),
     this.color.toLowerCase(),
   ].join('-')
+  next()
+})
+
+productSchema.pre('save', function (next) {
+  this.isOnSale = !(this.newProduct || this.bestSelling)
+  this.salePrice = (
+    this.price -
+    (this.usualDiscount / 100) * this.price
+  ).toFixed()
+
   next()
 })
 

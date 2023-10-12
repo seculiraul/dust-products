@@ -16,7 +16,7 @@ class RabbitMqClient {
       'direct'
     )
 
-    const q = await this.channel.assertQueue('orders')
+    const q = await this.channel.assertQueue('orders', { durable: true })
 
     await this.channel.bindQueue(
       q.queue,
@@ -25,9 +25,14 @@ class RabbitMqClient {
     )
     this.channel.consume(q.queue, (msg) => {
       const data = JSON.parse(msg.content)
-      adjustQuantity(data.message)
-      console.log(data)
-      this.channel.ack(msg)
+      try {
+        adjustQuantity(data.message)
+        this.channel.ack(msg)
+        console.log('message was consumed successfully')
+      } catch (err) {
+        console.log(err)
+        this.channel.reject(msg, true)
+      }
     })
   }
 
@@ -47,7 +52,8 @@ class RabbitMqClient {
           routingKey,
           message,
         })
-      )
+      ),
+      { persistent: true }
     )
 
     console.log('Message was published')
