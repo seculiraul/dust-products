@@ -14,7 +14,10 @@ module.exports = catchAsync(async (req, res, next) => {
     brand,
   })
 
-  const otherColors = similarProducts.map((product) => product.color)
+  const otherColors = similarProducts.map((product) => ({
+    color: product.color,
+    code: product?.code,
+  }))
 
   const product = await Product.create({ ...req.newProductData, otherColors })
 
@@ -26,9 +29,12 @@ module.exports = catchAsync(async (req, res, next) => {
     color: product.color,
   })
 
-  similarProducts.forEach(async (product) => {
-    product.otherColors = [...product.otherColors, color]
-    await product.save()
+  similarProducts.forEach(async (existingProduct) => {
+    existingProduct.otherColors = [
+      ...existingProduct.otherColors,
+      { color, code: product?.code },
+    ]
+    await existingProduct.save()
   })
   res.json({
     message: 'success',

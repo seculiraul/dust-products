@@ -47,7 +47,14 @@ const productSchema = new mongoose.Schema({
     type: String,
     required: [true, 'You must provide a color'],
   },
-  otherColors: [String],
+  otherColors: {
+    type: [
+      {
+        color: String,
+        code: String,
+      },
+    ],
+  },
   images: {
     type: [String],
     required: [true, 'You must provide 6 images'],
